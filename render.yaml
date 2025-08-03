@@ -1,12 +1,9 @@
 services:
   - type: web
-    name: stan-chatbot-backend
+    name: stan-chatbot-fullstack
     env: python
-    plan: free
-    buildCommand: pip install -r requirements_backend.txt
-    startCommand: python app_backend_only.py
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: PORT
-        generateValue: true
+        value: 10000

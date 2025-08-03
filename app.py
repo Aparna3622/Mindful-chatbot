@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import logging
 import json
@@ -12,12 +12,16 @@ import random
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
+# Configure Flask with template and static folders
+app = Flask(__name__, 
+           template_folder='templates',
+           static_folder='static')
 
 # Enable CORS
 CORS(app, origins=[
     "https://mindful-chatbot.vercel.app",
-    "https://*.vercel.app",
+    "https://*.vercel.app", 
+    "https://*.onrender.com",
     "http://localhost:3000"
 ], methods=["GET", "POST", "OPTIONS"])
 
@@ -132,18 +136,30 @@ def analyze_sentiment(message):
         return 'negative'
     return 'neutral'
 
+# Frontend route
 @app.route('/')
 def home():
+    return render_template('index.html')
+
+# API information
+@app.route('/api')
+def api_info():
     return jsonify({
-        "message": "STAN Chatbot Backend API",
+        "message": "STAN Chatbot Full-Stack Application",
         "version": "2.0.0",
         "endpoints": {
-            "/": "API information",
-            "/chat": "Chat with STAN (POST)",
-            "/health": "Health check",
-            "/stats": "Session statistics",
-            "/data": "View session data"
-        }
+            "/": "Frontend chatbot interface",
+            "/api": "API information",
+            "/chat": "POST - Send message to chatbot",
+            "/health": "GET - Health check",
+            "/stats": "GET - Get statistics"
+        },
+        "features": [
+            "Enhanced response patterns",
+            "Name and preference memory",
+            "Sentiment analysis",
+            "Full-stack deployment"
+        ]
     })
 
 @app.route('/chat', methods=['POST'])
@@ -191,10 +207,11 @@ def chat():
 def health():
     return jsonify({
         'status': 'healthy',
-        'message': 'STAN Chatbot Backend is running',
+        'message': 'STAN Full-Stack Chatbot is running',
         'active_sessions': len(chat_sessions),
         'storage': 'in-memory',
-        'model': 'enhanced-pattern-based'
+        'model': 'enhanced-pattern-based',
+        'deployment': 'full-stack'
     })
 
 @app.route('/stats')
@@ -202,7 +219,8 @@ def stats():
     return jsonify({
         'total_sessions': len(chat_sessions),
         'total_messages': sum(len(session) for session in chat_sessions.values()),
-        'storage_type': 'in-memory'
+        'storage_type': 'in-memory',
+        'deployment_type': 'full-stack'
     })
 
 @app.route('/data')

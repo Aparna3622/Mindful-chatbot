@@ -1,22 +1,86 @@
-# STAN Chatbot
+# STAN - AI Chatbot Assistant
 
-An AI-powered conversational chatbot built with Flask and Hugging Face Transformers.
+A modern, full-stack AI chatbot application with beautiful UI and intelligent conversation capabilities.
 
-## Features
+## 🌟 Live Demo
 
-- 🤖 AI-powered responses using DialoGPT model
-- 💬 Real-time chat interface
-- 📱 Responsive web design
-- 🔄 Session-based conversation history
-- ⚡ Fallback responses for reliability
-- 🎨 Modern, attractive UI
+- **Frontend**: [https://mindful-chatbot.vercel.app](https://mindful-chatbot.vercel.app)
+- **Backend API**: [https://mindful-chatbot-backend-2.onrender.com](https://mindful-chatbot-backend-2.onrender.com)
 
-## Requirements
+## 📋 Table of Contents
 
-- Python 3.7+
-- Flask
-- Transformers
-- PyTorch
+- [Features](#features)
+- [Architecture](#architecture)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Deployment](#deployment)
+- [API Documentation](#api-documentation)
+- [Frontend Features](#frontend-features)
+- [Backend Features](#backend-features)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+## ✨ Features
+
+### 🎨 Frontend Features
+- **Modern UI Design**: Glassmorphism effects with smooth animations
+- **Dark/Light Theme**: Toggle between themes with persistence
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Real-time Chat**: Instant message sending and receiving
+- **Connection Status**: Live backend connectivity monitoring
+- **Typing Indicators**: Professional chat experience
+- **Sentiment Display**: Visual sentiment indicators on messages
+- **Smooth Animations**: Enhanced user experience with CSS animations
+
+### 🤖 Backend Features
+- **AI-Powered Responses**: Intelligent conversation handling
+- **Sentiment Analysis**: Automatic emotion detection in messages
+- **Session Management**: Conversation context and history
+- **RESTful API**: Clean, documented API endpoints
+- **CORS Support**: Cross-origin requests for frontend integration
+- **Health Monitoring**: System status and performance tracking
+- **Error Handling**: Graceful error management and logging
+
+## �️ Architecture
+
+```
+┌─────────────────┐       ┌─────────────────┐
+│   Frontend      │       │    Backend      │
+│   (Vercel)      │ ←───→ │   (Render)      │
+│                 │       │                 │
+│ • React-like JS │       │ • Flask API     │
+│ • Modern CSS    │       │ • Sentiment AI  │
+│ • Responsive    │       │ • Session Mgmt  │
+└─────────────────┘       └─────────────────┘
+```
+
+### Deployment Strategy
+- **Frontend**: Static hosting on Vercel
+- **Backend**: Flask application on Render
+- **Separation**: Independent deployment and scaling
+
+## 🛠️ Technologies Used
+
+### Frontend
+- **HTML5**: Semantic markup structure
+- **CSS3**: Modern styling with animations
+- **JavaScript (ES6+)**: Interactive functionality
+- **Font Awesome**: Icon library
+- **Google Fonts**: Typography (Inter font family)
+
+### Backend
+- **Python 3.11**: Programming language
+- **Flask**: Web framework
+- **Flask-CORS**: Cross-origin resource sharing
+- **UUID**: Session ID generation
+- **Logging**: Application monitoring
+
+### Deployment & DevOps
+- **Vercel**: Frontend hosting
+- **Render**: Backend hosting
+- **Git**: Version control
+- **GitHub**: Repository hosting
 
 ## Installation
 
