@@ -1,6 +1,6 @@
-flask
-transformers
-torch
-pymongo
+# Backend requirements for Render deployment (lightweight)
+flask==3.1.1
+flask-cors==4.0.0
+requests==2.32.4
+pymongo==4.6.1
 dnspython
-requests

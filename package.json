@@ -1,0 +1,13 @@
+{
+  "name": "stan-chatbot-frontend",
+  "version": "1.0.0",
+  "description": "STAN AI Assistant Frontend",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static build - no build step needed'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["chatbot", "ai", "assistant", "stan"],
+  "author": "Your Name",
+  "license": "MIT"
+}
