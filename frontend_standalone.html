@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAN Chatbot - Separate Frontend</title>
+    <style>
+        /* Copy your existing CSS from templates/index.html */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 80%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin: 15px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            border: 1px solid #e1e5e9;
+            color: #333;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            margin-left: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .connection-status {
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .connection-status.success { color: green; }
+        .connection-status.warning { color: orange; }
+        .connection-status.error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🤖 STAN Chatbot</h1>
+            <p>Your AI Assistant</p>
+            <div id="connection-status" class="connection-status">Connecting...</div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-content">
+                    Hello! I'm STAN, your AI assistant. How can I help you today?
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration for separate deployment
+        const CONFIG = {
+            // Update this with your deployed backend URL
+            API_BASE_URL: 'https://your-backend.railway.app',
+            
+            // For local development, use:
+            // API_BASE_URL: 'http://localhost:5000',
+        };
+
+        class ChatBot {
+            constructor() {
+                this.sessionId = this.generateSessionId();
+                this.checkConnection();
+            }
+
+            generateSessionId() {
+                return 'session_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            async sendMessage(message) {
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            session_id: this.sessionId
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    return {
+                        response: 'Sorry, I seem to be having connection issues. Please try again.',
+                        session_id: this.sessionId,
+                        sentiment: 'neutral',
+                        context: 'Connection error'
+                    };
+                }
+            }
+
+            async checkConnection() {
+                const statusElement = document.getElementById('connection-status');
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/health`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'healthy') {
+                        statusElement.textContent = '✅ Connected to backend';
+                        statusElement.className = 'connection-status success';
+                    } else {
+                        statusElement.textContent = '⚠️ Backend issues detected';
+                        statusElement.className = 'connection-status warning';
+                    }
+                } catch (error) {
+                    statusElement.textContent = '❌ Cannot connect to backend';
+                    statusElement.className = 'connection-status error';
+                }
+            }
+
+            addMessage(content, isUser, metadata = {}) {
+                const messagesContainer = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+                
+                let messageContent = `<div class="message-content">${content}</div>`;
+                
+                // Add metadata display for bot messages
+                if (!isUser && metadata.sentiment) {
+                    messageContent += `<div style="font-size: 12px; color: #666; margin-top: 5px;">
+                        Sentiment: ${metadata.sentiment} | Context: ${metadata.context}
+                    </div>`;
+                }
+                
+                messageDiv.innerHTML = messageContent;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Global chatbot instance
+        const chatbot = new ChatBot();
+
+        // Global functions for HTML onclick handlers
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            chatbot.addMessage(message, true);
+            input.value = '';
+            
+            // Send to backend and get response
+            const response = await chatbot.sendMessage(message);
+            
+            // Add bot response to chat
+            chatbot.addMessage(response.response, false, {
+                sentiment: response.sentiment,
+                context: response.context
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('STAN Chatbot Frontend Loaded');
+            console.log('Backend URL:', CONFIG.API_BASE_URL);
+        });
+    </script>
+</body>
+</html>
